@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In — GigGreen{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+
+  <!-- Left panel: branding -->
+  <div class="auth-panel">
+    <div class="auth-panel__inner">
+      <a href="{{ url_for('index') }}" class="auth-back">
+        <i data-lucide="arrow-left" width="16" height="16"></i>
+        Back to home
+      </a>
+      <div class="auth-panel__brand">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}"
+             alt="GigGreen" width="130" height="42"
+             style="filter:brightness(0) invert(1);opacity:0.9;margin-bottom:var(--space-4);" />
+        <h2 class="auth-panel__quote">
+          "Your phone number<br/>is your passport."
+        </h2>
+        <p class="auth-panel__sub">
+          No passwords. No email. Just your number and a quick SMS code.
+        </p>
+      </div>
+      <div class="auth-panel__stats">
+        <div class="auth-panel__stat">
+          <span class="font-display" style="font-size:1.5rem;font-weight:900;color:var(--gold-accent);">07xx</span>
+          <span>Any Kenyan number works</span>
+        </div>
+        <div class="auth-panel__stat">
+          <span class="font-display" style="font-size:1.5rem;font-weight:900;color:var(--gold-accent);">10s</span>
+          <span>OTP arrives in under 10 seconds</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right panel: form -->
+  <div class="auth-form-panel">
+    <div class="auth-form-wrap">
+
+      <!-- Step 1: phone -->
+      <div id="step-phone" class="auth-step active">
+        <h1 class="auth-form-title">Welcome back</h1>
+        <p class="auth-form-subtitle">Enter the phone number you registered with. We'll send you a code.</p>
+
+        <div id="phone-error" class="alert alert-danger" style="display:none;margin-bottom:var(--space-3);">
+          <i data-lucide="alert-circle" width="16" height="16"></i>
+          <span id="phone-error-msg"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="phone-input">Phone number</label>
+          <div class="phone-input-wrap">
+            <span class="phone-prefix">🇰🇪 +254</span>
+            <input
+              id="phone-input"
+              type="tel"
+              class="form-input"
+              placeholder="712 345 678"
+              maxlength="12"
+              inputmode="numeric"
+              autocomplete="tel"
+              autofocus
+            />
+          </div>
+          <p class="form-hint">Enter your number in 07xx or 7xx format</p>
+        </div>
+
+        <button id="btn-send-otp" class="btn btn-primary btn-full btn-lg" type="button">
+          <i data-lucide="message-square" width="18" height="18"></i>
+          Send verification code
+        </button>
+
+        <p class="auth-switch">
+          New to GigGreen?
+          <a href="{{ url_for('auth.register') }}">Create your account →</a>
+        </p>
+      </div>
+
+      <!-- Step 2: OTP -->
+      <div id="step-otp" class="auth-step" style="display:none;">
+        <button id="btn-back-phone" class="auth-back-btn" type="button">
+          <i data-lucide="arrow-left" width="15" height="15"></i>
+          Change number
+        </button>
+
+        <h1 class="auth-form-title">Enter your code</h1>
+        <p class="auth-form-subtitle">
+          We sent a 6-digit code to <strong id="otp-phone-display"></strong>.
+          It expires in 10 minutes.
+        </p>
+
+        <div id="otp-error" class="alert alert-danger" style="display:none;margin-bottom:var(--space-3);">
+          <i data-lucide="alert-circle" width="16" height="16"></i>
+          <span id="otp-error-msg"></span>
+        </div>
+
+        <!-- OTP boxes -->
+        <div class="otp-inputs" id="otp-inputs">
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 1" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 2" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 3" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 4" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 5" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 6" />
+        </div>
+
+        <button id="btn-verify-otp" class="btn btn-primary btn-full btn-lg" type="button" style="margin-top:var(--space-3);">
+          <i data-lucide="check-circle" width="18" height="18"></i>
+          Verify and sign in
+        </button>
+
+        <p class="auth-switch" style="margin-top:var(--space-3);">
+          Didn't receive it?
+          <button id="btn-resend" class="link-btn" type="button">Resend code</button>
+          <span id="resend-timer" style="display:none;color:var(--text-muted);font-size:0.875rem;"></span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    initLoginFlow();
+    if (window.lucide) lucide.createIcons();
+  });
+</script>
+{% endblock %}

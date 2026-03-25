@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Post a Gig — Human Blueprint™{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+  <div class="auth-panel auth-panel--form">
+
+    <div class="blueprint-header">
+      <a href="{{ url_for('employer.dashboard') }}" class="back-link">← Back</a>
+      <h1 class="auth-title">Human Blueprint™</h1>
+      <p class="auth-subtitle">
+        Tell us exactly who you need. We'll find and notify the best-matched green workers by SMS.
+      </p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert alert--{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('employer.blueprint') }}" class="blueprint-form">
+
+      <!-- Step 1: The Work -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">1. The Work</legend>
+
+        <div class="form-group">
+          <label class="form-label" for="title">Job Title *</label>
+          <input type="text" id="title" name="title" class="form-input"
+                 placeholder="e.g. Solar Panel Installation — Residential"
+                 required maxlength="120">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="category">Green Category *</label>
+            <select id="category" name="category" class="form-input" required>
+              <option value="">Select category</option>
+              {% for cat in categories %}
+                <option value="{{ cat }}">{{ cat }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="location">Location *</label>
+            <select id="location" name="location" class="form-input" required>
+              <option value="">Select county</option>
+              {% for county in counties %}
+                <option value="{{ county }}">{{ county }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Job Description *</label>
+          <textarea id="description" name="description" class="form-input form-textarea"
+                    placeholder="Describe the work clearly. What will the worker be doing day-to-day?"
+                    rows="4" required></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Step 2: Pay & Duration -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">2. Pay & Duration</legend>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="pay_kes">Pay (KES) *</label>
+            <input type="number" id="pay_kes" name="pay_kes" class="form-input"
+                   placeholder="e.g. 3500" min="100" required>
+            <span class="form-hint">Total pay per worker for this gig</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="duration">Duration *</label>
+            <input type="text" id="duration" name="duration" class="form-input"
+                   placeholder="e.g. 1 day, 2 weeks">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="workers_needed">Workers Needed *</label>
+          <input type="number" id="workers_needed" name="workers_needed" class="form-input"
+                 value="1" min="1" max="50" required>
+        </div>
+      </fieldset>
+
+      <!-- Step 3: Impact -->
+      <fieldset class="form-section">
+        <legend class="form-section__title">3. Green Impact</legend>
+
+        <div class="form-group">
+          <label class="form-label" for="impact_points">Impact Points per Worker</label>
+          <input type="number" id="impact_points" name="impact_points" class="form-input"
+                 placeholder="e.g. 50" min="0" value="25">
+          <span class="form-hint">
+            Points awarded to workers on completion. Solar = 50, E-Waste = 20, Urban Farming = 15.
+          </span>
+        </div>
+      </fieldset>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary btn-full">
+          Post Gig &amp; Find Workers →
+        </button>
+        <p class="form-footnote">
+          We'll SMS the top 5 matched workers immediately after posting.
+        </p>
+      </div>
+
+    </form>
+  </div>
+
+  <div class="auth-panel auth-panel--info blueprint-info-panel">
+    <h2>How matching works</h2>
+    <div class="blueprint-step">
+      <span class="blueprint-step__num">1</span>
+      <div>
+        <strong>You post a gig</strong>
+        <p>Takes under 3 minutes using this form.</p>
+      </div>
+    </div>
+    <div class="blueprint-step">
+      <span class="blueprint-step__num">2</span>
+      <div>
+        <strong>We match instantly</strong>
+        <p>Our engine filters by category, location, and Green Impact Score.</p>
+      </div>
+    </div>
+    <div class="blueprint-step">
+      <span class="blueprint-step__num">3</span>
+      <div>
+        <strong>Workers get SMS alerts</strong>
+        <p>Top 5 matches are notified by SMS within seconds — no app needed.</p>
+      </div>
+    </div>
+    <div class="blueprint-step">
+      <span class="blueprint-step__num">4</span>
+      <div>
+        <strong>You confirm &amp; pay</strong>
+        <p>Review matches, confirm your worker, release payment via M-Pesa on completion.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

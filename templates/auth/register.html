@@ -1,0 +1,358 @@
+{% extends "base.html" %}
+
+{% block title %}Create Your Account — GigGreen{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
+{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+
+  <!-- Left panel -->
+  <div class="auth-panel">
+    <div class="auth-panel__inner">
+      <a href="{{ url_for('index') }}" class="auth-back">
+        <i data-lucide="arrow-left" width="16" height="16"></i>
+        Back to home
+      </a>
+      <div class="auth-panel__brand">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}"
+             alt="GigGreen" width="130" height="42"
+             style="filter:brightness(0) invert(1);opacity:0.9;margin-bottom:var(--space-4);" />
+        <h2 class="auth-panel__quote">
+          "You only need to<br/>do this once."
+        </h2>
+        <p class="auth-panel__sub">
+          Everything else works on your phone — even offline.
+          Takes less than 10 minutes.
+        </p>
+      </div>
+      <div class="auth-panel__checklist">
+        <div class="auth-check" id="check-phone">
+          <i data-lucide="circle" width="16" height="16"></i>
+          <span>Your phone number</span>
+        </div>
+        <div class="auth-check" id="check-verify">
+          <i data-lucide="circle" width="16" height="16"></i>
+          <span>SMS verification</span>
+        </div>
+        <div class="auth-check" id="check-profile">
+          <i data-lucide="circle" width="16" height="16"></i>
+          <span>Your name &amp; location</span>
+        </div>
+        <div class="auth-check" id="check-skills">
+          <i data-lucide="circle" width="16" height="16"></i>
+          <span>Your green skills</span>
+        </div>
+      </div>
+      <p class="auth-panel__note">
+        <i data-lucide="shield-check" width="13" height="13"></i>
+        Your data is safe. No emails, no spam, no passwords to forget.
+      </p>
+    </div>
+  </div>
+
+  <!-- Right panel: multi-step form -->
+  <div class="auth-form-panel">
+    <div class="auth-form-wrap">
+
+      <!-- Progress indicator -->
+      <div class="progress-steps" id="reg-steps" aria-label="Registration progress">
+        <div class="progress-step active" id="ps-1" data-step="1">
+          <div class="progress-step__dot">1</div>
+          <div class="progress-step__label">Phone</div>
+        </div>
+        <div class="progress-step" id="ps-2" data-step="2">
+          <div class="progress-step__dot">2</div>
+          <div class="progress-step__label">Verify</div>
+        </div>
+        <div class="progress-step" id="ps-3" data-step="3">
+          <div class="progress-step__dot">3</div>
+          <div class="progress-step__label">About you</div>
+        </div>
+        <div class="progress-step" id="ps-4" data-step="4">
+          <div class="progress-step__dot">4</div>
+          <div class="progress-step__label">Skills</div>
+        </div>
+      </div>
+
+      <!-- ── STEP 1: Phone ── -->
+      <div id="reg-step-1" class="form-step active">
+        <h1 class="auth-form-title">Start with your phone</h1>
+        <p class="auth-form-subtitle">This is your login forever. No email, no password — just your number.</p>
+
+        <div id="reg-phone-error" class="alert alert-danger" style="display:none;margin-bottom:var(--space-3);">
+          <i data-lucide="alert-circle" width="16" height="16"></i>
+          <span id="reg-phone-error-msg"></span>
+        </div>
+
+        <!-- Registering as employer? -->
+        <div class="auth-type-toggle">
+          <label class="auth-type-option">
+            <input type="radio" name="user_type" value="worker" checked />
+            <span class="auth-type-label">
+              <i data-lucide="hard-hat" width="16" height="16"></i>
+              I'm a Worker
+            </span>
+          </label>
+          <label class="auth-type-option">
+            <input type="radio" name="user_type" value="employer" />
+            <span class="auth-type-label">
+              <i data-lucide="building-2" width="16" height="16"></i>
+              I'm an Employer
+            </span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-phone">Phone number <span class="required">*</span></label>
+          <div class="phone-input-wrap">
+            <span class="phone-prefix">🇰🇪 +254</span>
+            <input
+              id="reg-phone"
+              name="phone"
+              type="tel"
+              class="form-input"
+              placeholder="712 345 678"
+              maxlength="12"
+              inputmode="numeric"
+              autocomplete="tel"
+              autofocus
+            />
+          </div>
+          <p class="form-hint">Safaricom, Airtel, Telkom — any Kenyan number works</p>
+        </div>
+
+        <button id="reg-btn-send-otp" class="btn btn-primary btn-full btn-lg" type="button">
+          <i data-lucide="message-square" width="18" height="18"></i>
+          Send verification code
+        </button>
+
+        <p class="auth-switch">
+          Already registered?
+          <a href="{{ url_for('auth.login') }}">Sign in →</a>
+        </p>
+      </div>
+
+      <!-- ── STEP 2: OTP ── -->
+      <div id="reg-step-2" class="form-step">
+        <button id="reg-btn-back-1" class="auth-back-btn" type="button">
+          <i data-lucide="arrow-left" width="15" height="15"></i>
+          Change number
+        </button>
+        <h1 class="auth-form-title">Verify your number</h1>
+        <p class="auth-form-subtitle">
+          Code sent to <strong id="reg-phone-display"></strong>.
+          Expires in 10 minutes.
+        </p>
+
+        <div id="reg-otp-error" class="alert alert-danger" style="display:none;margin-bottom:var(--space-3);">
+          <i data-lucide="alert-circle" width="16" height="16"></i>
+          <span id="reg-otp-error-msg"></span>
+        </div>
+
+        <div class="otp-inputs" id="reg-otp-inputs">
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 1" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 2" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 3" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 4" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 5" />
+          <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" aria-label="Digit 6" />
+        </div>
+
+        <button id="reg-btn-verify-otp" class="btn btn-primary btn-full btn-lg" type="button" style="margin-top:var(--space-3);">
+          <i data-lucide="check-circle" width="18" height="18"></i>
+          Verify and continue
+        </button>
+
+        <p class="auth-switch" style="margin-top:var(--space-3);">
+          Didn't get it?
+          <button id="reg-btn-resend" class="link-btn" type="button">Resend</button>
+        </p>
+      </div>
+
+      <!-- ── STEP 3: Name, location, availability ── -->
+      <div id="reg-step-3" class="form-step">
+        <h1 class="auth-form-title">Tell us about yourself</h1>
+        <p class="auth-form-subtitle">Just the basics. This helps employers find you for the right gigs.</p>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-name">Full name <span class="required">*</span></label>
+          <input id="reg-name" name="name" type="text" class="form-input"
+                 placeholder="e.g. Amina Wanjiku" autocomplete="name" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-county">County <span class="required">*</span></label>
+          <select id="reg-county" name="location" class="form-select">
+            <option value="">Select your county</option>
+          </select>
+          <p class="form-hint">We use this to match you with gigs near you</p>
+        </div>
+
+        <!-- Employer-only fields (hidden for workers) -->
+        <div id="employer-fields" style="display:none;">
+          <div class="form-group">
+            <label class="form-label" for="reg-company">Company / Organisation name <span class="required">*</span></label>
+            <input id="reg-company" name="company_name" type="text" class="form-input"
+                   placeholder="e.g. SunBridge Energy" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-sector">Sector <span class="required">*</span></label>
+            <select id="reg-sector" name="sector" class="form-select">
+              <option value="">Select sector</option>
+              <option>Solar</option>
+              <option>E-Waste</option>
+              <option>Urban Farming</option>
+              <option>Green Construction</option>
+              <option>Carbon Markets</option>
+              <option>Climate Tech</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" id="availability-group">
+          <label class="form-label">Availability</label>
+          <div class="avail-options">
+            <label class="avail-option">
+              <input type="radio" name="availability" value="full-time" checked />
+              <span><i data-lucide="clock" width="14" height="14"></i> Full-time</span>
+            </label>
+            <label class="avail-option">
+              <input type="radio" name="availability" value="part-time" />
+              <span><i data-lucide="clock-3" width="14" height="14"></i> Part-time</span>
+            </label>
+            <label class="avail-option">
+              <input type="radio" name="availability" value="weekends" />
+              <span><i data-lucide="calendar" width="14" height="14"></i> Weekends</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-bio">Brief bio <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+          <textarea id="reg-bio" name="bio" class="form-textarea" rows="3"
+                    placeholder="What do you do? What are you good at? Keep it short."></textarea>
+          <p class="form-hint">This shows on your profile. Max 200 characters.</p>
+        </div>
+
+        <button id="reg-btn-next-3" class="btn btn-primary btn-full btn-lg" type="button">
+          Continue
+          <i data-lucide="arrow-right" width="18" height="18"></i>
+        </button>
+      </div>
+
+      <!-- ── STEP 4: Green categories ── -->
+      <div id="reg-step-4" class="form-step">
+        <h1 class="auth-form-title">What green work do you do?</h1>
+        <p class="auth-form-subtitle">
+          Select all that apply. You can update this later. This determines which gigs you get matched to.
+        </p>
+
+        <input type="hidden" id="reg-categories" name="green_categories" value="[]" />
+
+        <div class="chip-group" id="category-chips">
+          <button type="button" class="chip" data-value="Solar">
+            <i data-lucide="sun" width="14" height="14"></i> Solar
+          </button>
+          <button type="button" class="chip" data-value="E-Waste">
+            <i data-lucide="recycle" width="14" height="14"></i> E-Waste
+          </button>
+          <button type="button" class="chip" data-value="Urban Farming">
+            <i data-lucide="sprout" width="14" height="14"></i> Urban Farming
+          </button>
+          <button type="button" class="chip" data-value="Carbon Scout">
+            <i data-lucide="database" width="14" height="14"></i> Carbon Scout
+          </button>
+          <button type="button" class="chip" data-value="Green Construction">
+            <i data-lucide="hard-hat" width="14" height="14"></i> Green Construction
+          </button>
+          <button type="button" class="chip" data-value="Community Educator">
+            <i data-lucide="megaphone" width="14" height="14"></i> Community Educator
+          </button>
+          <button type="button" class="chip" data-value="Battery Swap">
+            <i data-lucide="battery-charging" width="14" height="14"></i> Battery Swap
+          </button>
+          <button type="button" class="chip" data-value="Climate Data">
+            <i data-lucide="cloud-rain" width="14" height="14"></i> Climate Data
+          </button>
+        </div>
+
+        <div id="category-hint" class="alert alert-info" style="margin-top:var(--space-3);">
+          <i data-lucide="info" width="16" height="16"></i>
+          Select at least one category to continue.
+        </div>
+
+        <button id="reg-btn-submit" class="btn btn-primary btn-full btn-lg"
+                type="button" style="margin-top:var(--space-3);" disabled>
+          <i data-lucide="check-circle" width="18" height="18"></i>
+          Create my account
+        </button>
+
+        <p style="font-size:0.8125rem;color:var(--text-muted);text-align:center;margin-top:var(--space-2);">
+          You only need to do this once. Everything else works on your phone.
+        </p>
+      </div>
+
+      <!-- ── SUCCESS STATE ── -->
+      <div id="reg-step-success" class="form-step" style="text-align:center;">
+        <div class="reg-success-icon">
+          <i data-lucide="check-circle-2" width="48" height="48" style="stroke:var(--success);"></i>
+        </div>
+        <h1 class="auth-form-title" style="margin-top:var(--space-3);">You're in! 🌿</h1>
+        <p class="auth-form-subtitle">
+          Welcome to GigGreen. Your account is live. You'll get an SMS the moment a gig
+          matches your skills and area.
+        </p>
+        <a href="{{ url_for('worker.dashboard') }}" id="reg-go-dashboard"
+           class="btn btn-primary btn-full btn-lg" style="margin-top:var(--space-4);">
+          <i data-lucide="layout-dashboard" width="18" height="18"></i>
+          Go to my dashboard
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    initRegisterFlow();
+    populateCountyDropdown("#reg-county");
+    initChips("#category-chips", "#reg-categories");
+    if (window.lucide) lucide.createIcons();
+
+    // Show/hide employer fields based on user type
+    const radios = document.querySelectorAll('input[name="user_type"]');
+    const empFields = document.getElementById("employer-fields");
+    const availGroup = document.getElementById("availability-group");
+    radios.forEach(r => r.addEventListener("change", () => {
+      const isEmployer = r.value === "employer" && r.checked;
+      empFields.style.display = isEmployer ? "block" : "none";
+      availGroup.style.display = isEmployer ? "none" : "block";
+    }));
+
+    // Pre-select employer if URL param present
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("type") === "employer") {
+      document.querySelector('input[value="employer"]').checked = true;
+      empFields.style.display = "block";
+      availGroup.style.display = "none";
+    }
+
+    // Enable submit when at least 1 category selected
+    document.getElementById("category-chips").addEventListener("click", () => {
+      const selected = document.querySelectorAll("#category-chips .chip.selected").length;
+      document.getElementById("reg-btn-submit").disabled = selected === 0;
+      document.getElementById("category-hint").style.display = selected > 0 ? "none" : "flex";
+    });
+  });
+</script>
+{% endblock %}

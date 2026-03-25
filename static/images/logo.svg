@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none" role="img" aria-label="GigGreen">
+  <!-- Leaf icon mark -->
+  <g>
+    <!-- Outer leaf shape -->
+    <path d="M8 32 C8 32 4 20 10 12 C16 4 26 4 26 4 C26 4 28 16 22 24 C16 32 8 32 8 32Z" fill="#1A6B3A"/>
+    <!-- Inner vein -->
+    <path d="M8 32 C14 22 22 14 26 4" stroke="#2D9B5A" stroke-width="1.5" stroke-linecap="round"/>
+    <!-- Small highlight leaf -->
+    <path d="M14 24 C14 24 12 18 16 14 C20 10 24 10 24 10 C24 10 25 16 21 20 C17 24 14 24 14 24Z" fill="#2D9B5A" opacity="0.6"/>
+    <!-- Gold dot — impact score indicator -->
+    <circle cx="9" cy="31" r="2.5" fill="#F4A935"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="34" y="27" font-family="Georgia, serif" font-size="17" font-weight="700" fill="#1A6B3A" letter-spacing="-0.3">Gig</text>
+  <text x="60" y="27" font-family="Georgia, serif" font-size="17" font-weight="700" fill="#2D9B5A" letter-spacing="-0.3">Green</text>
+</svg>

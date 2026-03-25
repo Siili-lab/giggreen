@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Impact Report — GigGreen{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar-circle employer-avatar">E</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('employer.dashboard') }}" class="nav-item">📊 Dashboard</a>
+      <a href="{{ url_for('employer.blueprint') }}" class="nav-item">✏️ Post a Gig</a>
+      <a href="{{ url_for('employer.impact_report') }}" class="nav-item active">🌍 Impact Report</a>
+      <a href="{{ url_for('auth.logout') }}" class="nav-item nav-item--logout">↩ Logout</a>
+    </nav>
+  </aside>
+
+  <main class="dashboard-main">
+
+    <div class="dashboard-header">
+      <div>
+        <h1 class="dashboard-greeting">Your Green Impact Report 🌍</h1>
+        <p class="dashboard-sub">
+          Every gig you post moves Kenya closer to a green economy.
+        </p>
+      </div>
+    </div>
+
+    <!-- ESG Metrics -->
+    <div class="stats-row stats-row--impact">
+      <div class="stat-card stat-card--green">
+        <span class="stat-number">{{ total_gigs }}</span>
+        <span class="stat-label">Gigs Completed</span>
+        <span class="stat-sub">Jobs created for green workers</span>
+      </div>
+      <div class="stat-card stat-card--earth">
+        <span class="stat-number">{{ "{:,}".format(total_co2) }}kg</span>
+        <span class="stat-label">CO₂ Offset (est.)</span>
+        <span class="stat-sub">Based on gig categories</span>
+      </div>
+      <div class="stat-card stat-card--gold">
+        <span class="stat-number">KES {{ "{:,}".format(total_paid) }}</span>
+        <span class="stat-label">Total Paid Out</span>
+        <span class="stat-sub">Directly to workers via M-Pesa</span>
+      </div>
+    </div>
+
+    <!-- Completed gigs breakdown -->
+    <section class="dashboard-section">
+      <h2 class="section-title">Completed Gigs</h2>
+
+      {% if gigs %}
+        <div class="impact-table-wrapper">
+          <table class="impact-table">
+            <thead>
+              <tr>
+                <th>Gig</th>
+                <th>Category</th>
+                <th>Location</th>
+                <th>Paid (KES)</th>
+                <th>Impact pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for gig in gigs %}
+              <tr>
+                <td>{{ gig.title }}</td>
+                <td><span class="badge badge--category">{{ gig.category }}</span></td>
+                <td>{{ gig.location }}</td>
+                <td>{{ "{:,}".format(gig.pay_kes) }}</td>
+                <td>{{ gig.impact_points }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p class="empty-state__icon">🌱</p>
+          <p class="empty-state__title">No completed gigs yet</p>
+          <p class="empty-state__body">
+            Your impact report will populate as workers complete your gigs.
+          </p>
+          <a href="{{ url_for('employer.blueprint') }}" class="btn btn-primary">
+            Post Your First Gig
+          </a>
+        </div>
+      {% endif %}
+    </section>
+
+  </main>
+</div>
+{% endblock %}

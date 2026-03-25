@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — GigGreen Employer{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar-circle employer-avatar">
+        {{ employer.company_name[0] if employer else 'E' }}
+      </div>
+      <div>
+        <p class="sidebar-name">{{ employer.company_name if employer else 'Company' }}</p>
+        <span class="badge badge--employer">Employer</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('employer.dashboard') }}" class="nav-item active">📊 Dashboard</a>
+      <a href="{{ url_for('employer.blueprint') }}" class="nav-item">✏️ Post a Gig</a>
+      <a href="{{ url_for('employer.impact_report') }}" class="nav-item">🌍 Impact Report</a>
+      <a href="{{ url_for('auth.logout') }}" class="nav-item nav-item--logout">↩ Logout</a>
+    </nav>
+  </aside>
+
+  <main class="dashboard-main">
+
+    <div class="dashboard-header">
+      <div>
+        <h1 class="dashboard-greeting">
+          Welcome back, {{ employer.contact_name if employer else 'there' }} 👋
+        </h1>
+        <p class="dashboard-sub">Here's what's happening with your gigs today.</p>
+      </div>
+      <a href="{{ url_for('employer.blueprint') }}" class="btn btn-primary">
+        + Post New Gig
+      </a>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <span class="stat-number">{{ active_gigs | length }}</span>
+        <span class="stat-label">Active Gigs</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">
+          {{ active_gigs | selectattr('status', 'equalto', 'matched') | list | length }}
+        </span>
+        <span class="stat-label">Workers Matched</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">
+          {{ active_gigs | selectattr('status', 'equalto', 'in_progress') | list | length }}
+        </span>
+        <span class="stat-label">In Progress</span>
+      </div>
+    </div>
+
+    <!-- Active gigs -->
+    <section class="dashboard-section">
+      <h2 class="section-title">Active Postings</h2>
+
+      {% if active_gigs %}
+        <div class="gig-list">
+          {% for gig in active_gigs %}
+          <div class="gig-card">
+            <div class="gig-card__header">
+              <div>
+                <h3 class="gig-card__title">{{ gig.title }}</h3>
+                <span class="badge badge--category">{{ gig.category }}</span>
+              </div>
+              <span class="gig-status gig-status--{{ gig.status }}">
+                {{ gig.status | replace('_', ' ') | title }}
+              </span>
+            </div>
+            <div class="gig-card__meta">
+              <span>📍 {{ gig.location }}</span>
+              <span>💰 KES {{ "{:,}".format(gig.pay_kes) }}</span>
+              <span>⚡ {{ gig.impact_points }} pts</span>
+            </div>
+            <div class="gig-card__actions">
+              <a href="{{ url_for('employer.matches', gig_id=gig.id) }}"
+                 class="btn btn-secondary btn-sm">View Matches</a>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <p class="empty-state__icon">🌱</p>
+          <p class="empty-state__title">No active gigs yet</p>
+          <p class="empty-state__body">
+            Post your first gig and we'll match you with verified green workers in minutes.
+          </p>
+          <a href="{{ url_for('employer.blueprint') }}" class="btn btn-primary">
+            Post a Gig
+          </a>
+        </div>
+      {% endif %}
+    </section>
+
+  </main>
+</div>
+{% endblock %}

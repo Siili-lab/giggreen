@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}My Earnings — GigGreen{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar-ring">
+        <span class="avatar-initials">{{ (worker.name or 'W')[0] | upper }}</span>
+      </div>
+      <div class="sidebar-name">{{ worker.name or 'Worker' }}</div>
+      <div class="sidebar-phone">{{ worker.phone }}</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('worker.dashboard') }}" class="sidebar-link">🏠 Dashboard</a>
+      <a href="{{ url_for('worker.gig_feed') }}" class="sidebar-link">💼 Browse Gigs</a>
+      <a href="{{ url_for('worker.profile') }}" class="sidebar-link">👤 My Profile</a>
+      <a href="{{ url_for('worker.earnings') }}" class="sidebar-link active">💰 Earnings</a>
+    </nav>
+  </aside>
+
+  <main class="dashboard-main">
+    <div class="dashboard-header">
+      <div>
+        <h1 class="dashboard-greeting">My Earnings</h1>
+        <p class="dashboard-subtitle">All payments go straight to your M-Pesa.</p>
+      </div>
+    </div>
+
+    <!-- ── Stats Row ─────────────────────────────────────────────────── -->
+    <div class="earnings-stats-row">
+      <div class="earnings-stat-card card">
+        <div class="earnings-stat-label">Total Earned</div>
+        <div class="earnings-stat-value green">KES {{ '{:,}'.format(total_earned) }}</div>
+        <div class="earnings-stat-sub">Confirmed M-Pesa payments</div>
+      </div>
+      <div class="earnings-stat-card card">
+        <div class="earnings-stat-label">Pending</div>
+        <div class="earnings-stat-value gold">KES {{ '{:,}'.format(total_pending) }}</div>
+        <div class="earnings-stat-sub">In escrow — releasing soon</div>
+      </div>
+      <div class="earnings-stat-card card">
+        <div class="earnings-stat-label">Gigs Completed</div>
+        <div class="earnings-stat-value">{{ gigs_done }}</div>
+        <div class="earnings-stat-sub">Paid gigs done</div>
+      </div>
+    </div>
+
+    <!-- ── Payments Table ────────────────────────────────────────────── -->
+    <section class="dashboard-section">
+      <h2 class="section-title">Payment History</h2>
+
+      {% if payments %}
+      <div class="payments-table card">
+        <div class="table-head">
+          <span>Gig</span>
+          <span>Category</span>
+          <span>Employer</span>
+          <span>Date</span>
+          <span>Amount</span>
+          <span>Status</span>
+        </div>
+        {% for p in payments %}
+        <div class="table-row">
+          <span class="table-cell-primary">{{ p.gig_title }}</span>
+          <span>
+            <span class="category-badge-sm">{{ p.category }}</span>
+          </span>
+          <span>{{ p.company_name or '—' }}</span>
+          <span class="text-muted">{{ p.created_at[:10] }}</span>
+          <span class="amount-cell">KES {{ '{:,}'.format(p.amount_kes) }}</span>
+          <span>
+            {% if p.status == 'released' %}
+            <span class="payment-badge payment-released">Paid ✓</span>
+            {% elif p.status == 'held' %}
+            <span class="payment-badge payment-held">In Escrow</span>
+            {% else %}
+            <span class="payment-badge payment-failed">{{ p.status | capitalize }}</span>
+            {% endif %}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+
+      {% else %}
+      <div class="empty-state card">
+        <div class="empty-icon">💰</div>
+        <h3>No payments yet</h3>
+        <p>When you complete a gig, your payment will show here. It arrives in your M-Pesa within minutes of the employer confirming.</p>
+        <a href="{{ url_for('worker.gig_feed') }}" class="btn btn-primary">Find a Gig</a>
+      </div>
+      {% endif %}
+    </section>
+
+    <!-- How payments work -->
+    <section class="dashboard-section">
+      <div class="info-card card-flat">
+        <h3>💡 How payments work</h3>
+        <ol class="info-steps">
+          <li>You complete the gig and the employer confirms.</li>
+          <li>Payment is released from escrow to your M-Pesa — no bank account needed.</li>
+          <li>You get an SMS confirmation from GigGreen.</li>
+          <li>Funds arrive in your M-Pesa within minutes.</li>
+        </ol>
+      </div>
+    </section>
+
+  </main>
+</div>
+{% endblock %}

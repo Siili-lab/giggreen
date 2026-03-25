@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+{% block title %}My Profile — GigGreen{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar-ring">
+        <span class="avatar-initials">{{ (worker.name or 'W')[0] | upper }}</span>
+      </div>
+      <div class="sidebar-name">{{ worker.name or 'Worker' }}</div>
+      <div class="sidebar-phone">{{ worker.phone }}</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('worker.dashboard') }}" class="sidebar-link">🏠 Dashboard</a>
+      <a href="{{ url_for('worker.gig_feed') }}" class="sidebar-link">💼 Browse Gigs</a>
+      <a href="{{ url_for('worker.profile') }}" class="sidebar-link active">👤 My Profile</a>
+      <a href="{{ url_for('worker.earnings') }}" class="sidebar-link">💰 Earnings</a>
+    </nav>
+  </aside>
+
+  <main class="dashboard-main">
+    <div class="dashboard-header">
+      <div>
+        <h1 class="dashboard-greeting">My Profile</h1>
+        <p class="dashboard-subtitle">Keep this updated — employers use it to find you.</p>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+
+      <!-- ── Edit Form ─────────────────────────────────────────────── -->
+      <div class="profile-form-card card">
+        <h2 class="card-title">Personal Details</h2>
+
+        <form id="profileForm" novalidate>
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" id="name" name="name" class="form-input"
+                   value="{{ worker.name or '' }}" placeholder="e.g. Amina Wanjiku" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input type="text" class="form-input" value="{{ worker.phone }}" disabled>
+            <span class="form-hint">Your phone number is your login — it cannot be changed.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">County / Location</label>
+            <select id="location" name="location" class="form-input" required>
+              <option value="">Select your county</option>
+              {% set counties = ['Nairobi','Mombasa','Kisumu','Nakuru','Eldoret','Thika','Malindi','Kitale','Garissa','Kisii','Nyeri','Meru','Lamu','Kakamega','Bungoma','Machakos','Kilifi','Kwale','Kajiado','Murang\'a','Kirinyaga','Nyandarua','Laikipia','Samburu','Trans Nzoia','Uasin Gishu','Elgeyo-Marakwet','Nandi','Baringo','Bomet','Kericho','Narok','Migori','Homa Bay','Siaya','Vihiga','Busia','West Pokot','Turkana','Marsabit','Isiolo','Tharaka-Nithi','Embu','Kitui','Makueni','Mandera','Wajir','Tana River','Taita-Taveta'] %}
+              {% for county in counties %}
+              <option value="{{ county }}" {{ 'selected' if worker.location == county }}>
+                {{ county }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Availability</label>
+            <div class="radio-group">
+              {% for opt, label in [('full-time','Full-time'),('part-time','Part-time'),('weekends','Weekends only')] %}
+              <label class="radio-pill {% if worker.availability == opt %}active{% endif %}">
+                <input type="radio" name="availability" value="{{ opt }}"
+                       {{ 'checked' if worker.availability == opt }}>
+                {{ label }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Short Bio <span class="optional">(optional)</span></label>
+            <textarea id="bio" name="bio" class="form-input form-textarea"
+                      placeholder="Tell employers a bit about yourself and your experience..."
+                      maxlength="300">{{ worker.bio or '' }}</textarea>
+            <span class="form-hint char-count"><span id="bioCount">{{ (worker.bio or '') | length }}</span>/300</span>
+          </div>
+
+          <!-- Green Categories -->
+          <div class="form-group">
+            <label class="form-label">Green Job Categories</label>
+            <p class="form-hint">Select the types of green work you do or want to do.</p>
+            <div class="categories-chips" id="categoriesChips">
+              {% set worker_cats = worker.green_categories_list or [] %}
+              {% for cat in categories %}
+              <button type="button"
+                      class="category-chip {% if cat in worker_cats %}active{% endif %}"
+                      data-category="{{ cat }}">
+                {{ cat }}
+              </button>
+              {% endfor %}
+            </div>
+            <input type="hidden" id="greenCategories" name="green_categories"
+                   value="{{ worker.green_categories or '[]' }}">
+          </div>
+
+          <div id="profileMsg" class="form-message" hidden></div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="saveBtn">
+            Save Changes
+          </button>
+        </form>
+      </div>
+
+      <!-- ── Stats Panel ───────────────────────────────────────────── -->
+      <div class="profile-stats-panel">
+        <div class="stat-card card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-value">{{ worker.impact_score }}</div>
+          <div class="stat-label">Impact Score</div>
+        </div>
+        <div class="stat-card card">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-value">Level {{ worker.level }}</div>
+          <div class="stat-label">{{ session.user_level_name }}</div>
+        </div>
+        <div class="stat-card card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-value">{{ worker.created_at[:10] }}</div>
+          <div class="stat-label">Member Since</div>
+        </div>
+        <div class="profile-tip card-flat">
+          <strong>💡 Profile Tip</strong>
+          <p>Workers with complete profiles are 3× more likely to be matched to a gig.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const WORKER_CATS = {{ worker.green_categories or '[]' }};
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Bio character count
+  const bio      = document.getElementById('bio');
+  const bioCount = document.getElementById('bioCount');
+  bio.addEventListener('input', () => { bioCount.textContent = bio.value.length; });
+
+  // Category chip toggle
+  let selected = Array.isArray(WORKER_CATS) ? [...WORKER_CATS] : JSON.parse(WORKER_CATS || '[]');
+  const hidden = document.getElementById('greenCategories');
+
+  document.querySelectorAll('.category-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.category;
+      if (selected.includes(cat)) {
+        selected = selected.filter(c => c !== cat);
+        btn.classList.remove('active');
+      } else {
+        selected.push(cat);
+        btn.classList.add('active');
+      }
+      hidden.value = JSON.stringify(selected);
+    });
+  });
+
+  // Radio pills
+  document.querySelectorAll('.radio-pill input').forEach(radio => {
+    radio.addEventListener('change', () => {
+      document.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('active'));
+      radio.closest('.radio-pill').classList.add('active');
+    });
+  });
+
+  // Form submit
+  document.getElementById('profileForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('saveBtn');
+    const msg = document.getElementById('profileMsg');
+    btn.textContent = 'Saving…';
+    btn.disabled = true;
+
+    const avail = document.querySelector('input[name="availability"]:checked')?.value || 'full-time';
+
+    try {
+      const res  = await fetch('/worker/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:             document.getElementById('name').value,
+          location:         document.getElementById('location').value,
+          bio:              document.getElementById('bio').value,
+          availability:     avail,
+          green_categories: selected,
+        }),
+      });
+      const data = await res.json();
+      msg.hidden    = false;
+      msg.className = res.ok ? 'form-message form-message--success' : 'form-message form-message--error';
+      msg.textContent = data.message || (res.ok ? 'Saved!' : 'Something went wrong.');
+    } catch {
+      msg.hidden    = false;
+      msg.className = 'form-message form-message--error';
+      msg.textContent = 'Connection error. Please try again.';
+    } finally {
+      btn.textContent = 'Save Changes';
+      btn.disabled = false;
+    }
+  });
+});
+</script>
+{% endblock %}

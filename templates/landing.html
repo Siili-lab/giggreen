@@ -1,0 +1,362 @@
+{% extends "base.html" %}
+
+{% block title %}GigGreen — Green Jobs for Kenya{% endblock %}
+{% block body_class %}landing-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
+{% endblock %}
+
+{% block content %}
+
+<!-- ── HERO ──────────────────────────────────────────────────────────────────── -->
+<section class="hero" aria-label="Hero">
+  <!-- Decorative background leaves -->
+  <div class="hero-leaf hero-leaf--1" aria-hidden="true">
+    <svg viewBox="0 0 120 160" width="120" fill="currentColor">
+      <path d="M60 0 C60 0 100 40 100 90 C100 130 80 160 60 160 C40 160 20 130 20 90 C20 40 60 0 60 0Z"/>
+    </svg>
+  </div>
+  <div class="hero-leaf hero-leaf--2" aria-hidden="true">
+    <svg viewBox="0 0 80 110" width="80" fill="currentColor">
+      <path d="M40 0 C40 0 70 25 70 60 C70 90 57 110 40 110 C23 110 10 90 10 60 C10 25 40 0 40 0Z"/>
+    </svg>
+  </div>
+
+  <div class="container">
+    <div class="hero__inner">
+      <div class="hero__content">
+
+        <div class="hero__eyebrow hero-enter-1">
+          <i data-lucide="leaf" width="14" height="14"></i>
+          Kenya's green economy platform
+        </div>
+
+        <h1 class="display-1 hero__headline hero-enter-2">
+          The green economy<br/>
+          is already here.<br/>
+          <em class="hero__headline-em">Are you in it?</em>
+        </h1>
+
+        <p class="hero__subheadline hero-enter-3">
+          GigGreen connects Kenya's gig workers to green jobs — solar, e-waste,
+          urban farming, climate data, and more. No CV needed. Just your phone.
+        </p>
+
+        <div class="hero__ctas hero-enter-4">
+          <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-xl">
+            <i data-lucide="user-plus" width="20" height="20"></i>
+            I'm a Worker
+          </a>
+          <a href="{{ url_for('auth.register') }}?type=employer" class="btn btn-secondary btn-xl">
+            <i data-lucide="building-2" width="20" height="20"></i>
+            I'm an Employer
+          </a>
+        </div>
+
+        <p class="hero__note hero-enter-4">
+          <i data-lucide="smartphone" width="13" height="13"></i>
+          Works on any phone. Register once at a cyber cafe — everything else via SMS.
+        </p>
+      </div>
+
+      <!-- Hero visual: score card mockup -->
+      <div class="hero__visual hero-enter-3" aria-hidden="true">
+        <div class="hero-card">
+          <div class="hero-card__header">
+            <div>
+              <p class="hero-card__greeting">Good morning</p>
+              <h3 class="hero-card__name">Amina Wanjiku</h3>
+            </div>
+            <div class="badge badge-level badge-level-2">
+              <i data-lucide="sprout" width="12" height="12"></i>
+              Green Sprout
+            </div>
+          </div>
+
+          <div class="hero-card__score-row">
+            <div class="hero-card__gauge">
+              <svg viewBox="0 0 120 120" width="100" class="score-gauge__svg">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="10"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--gold-accent)" stroke-width="10"
+                  stroke-linecap="round"
+                  stroke-dasharray="314"
+                  stroke-dashoffset="157"
+                  transform="rotate(-90 60 60)"/>
+              </svg>
+              <div class="hero-card__score-num">
+                <span class="font-display" style="font-size:1.5rem;font-weight:900;color:var(--text-primary);">245</span>
+                <span style="font-size:0.6rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-muted);">pts</span>
+              </div>
+            </div>
+            <div class="hero-card__score-info">
+              <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px;">Green Impact Score™</p>
+              <div class="progress-bar-wrap" style="margin-bottom:6px;">
+                <div class="progress-bar-fill" data-width="82%" style="width:82%;"></div>
+              </div>
+              <p style="font-size:0.75rem;color:var(--text-muted);">55 pts to <strong>Green Builder</strong></p>
+            </div>
+          </div>
+
+          <div class="hero-card__gig">
+            <div class="hero-card__gig-left">
+              <div class="badge badge-solar" style="margin-bottom:6px;">
+                <i data-lucide="sun" width="10" height="10"></i> Solar
+              </div>
+              <p style="font-size:0.875rem;font-weight:600;color:var(--text-primary);">Solar Panel Installation</p>
+              <p style="font-size:0.75rem;color:var(--text-muted);">Nairobi · Tomorrow 8am</p>
+            </div>
+            <div style="text-align:right;">
+              <p style="font-family:var(--font-display);font-size:1.125rem;font-weight:700;color:var(--green-primary);">KES 3,500</p>
+              <span class="badge badge-open">Confirmed</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating SMS alert -->
+        <div class="hero-sms">
+          <i data-lucide="message-square" width="14" height="14" style="stroke:var(--green-primary);flex-shrink:0;"></i>
+          <span><strong>GigGreen:</strong> New solar gig near you. KES 4,200. Reply YES.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS BAR ─────────────────────────────────────────────────────────────── -->
+<section class="stats-bar reveal" aria-label="Key statistics">
+  <div class="container">
+    <div class="stats-bar__inner">
+      <div class="stats-bar__item">
+        <span class="stats-bar__value font-display">3.3M</span>
+        <span class="stats-bar__label">Green jobs by 2030 in Kenya</span>
+      </div>
+      <div class="stats-bar__divider" aria-hidden="true"></div>
+      <div class="stats-bar__item">
+        <span class="stats-bar__value font-display">5.1M</span>
+        <span class="stats-bar__label">Informal workers ready to transition</span>
+      </div>
+      <div class="stats-bar__divider" aria-hidden="true"></div>
+      <div class="stats-bar__item">
+        <span class="stats-bar__value font-display">6</span>
+        <span class="stats-bar__label">Africa's Talking APIs powering this</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ──────────────────────────────────────────────────────────── -->
+<section class="section how-it-works" id="how-it-works" aria-labelledby="how-heading">
+  <div class="container">
+
+    <div class="section-header reveal text-center">
+      <p class="section-eyebrow">Simple by design</p>
+      <h2 class="display-3" id="how-heading">Made for real life in Kenya</h2>
+      <p class="section-subtext">
+        No app to download. No CV to write. Designed for someone at a cyber cafe in Githurai.
+      </p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step reveal reveal-delay-1">
+        <div class="step__number">01</div>
+        <div class="step__icon">
+          <i data-lucide="monitor" width="28" height="28"></i>
+        </div>
+        <h3 class="step__title">Register once</h3>
+        <p class="step__text">
+          Visit any cyber cafe. Enter your phone number and verify with an SMS code.
+          Pick your green skills. Done in under 10 minutes.
+        </p>
+      </div>
+
+      <div class="step reveal reveal-delay-2">
+        <div class="step__number">02</div>
+        <div class="step__icon">
+          <i data-lucide="message-square" width="28" height="28"></i>
+        </div>
+        <h3 class="step__title">Get SMS alerts</h3>
+        <p class="step__text">
+          When a gig matches your skills and location, you get an SMS instantly.
+          Reply YES to apply — no internet needed.
+        </p>
+      </div>
+
+      <div class="step reveal reveal-delay-3">
+        <div class="step__number">03</div>
+        <div class="step__icon">
+          <i data-lucide="wallet" width="28" height="28"></i>
+        </div>
+        <h3 class="step__title">Get paid to M-Pesa</h3>
+        <p class="step__text">
+          Complete the gig, mark it done via USSD on any phone.
+          Payment releases straight to your M-Pesa. No waiting. No paperwork.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── GREEN JOB CATEGORIES ──────────────────────────────────────────────────── -->
+<section class="section categories-section" id="categories" aria-labelledby="cats-heading">
+  <div class="container">
+
+    <div class="section-header reveal text-center">
+      <p class="section-eyebrow">Green economy sectors</p>
+      <h2 class="display-3" id="cats-heading">Every kind of green work</h2>
+      <p class="section-subtext">
+        From rooftop solar to carbon data collection — if it's good for the planet,
+        it's on GigGreen.
+      </p>
+    </div>
+
+    <div class="categories-grid">
+
+      <a href="{{ url_for('auth.register') }}" class="category-card reveal reveal-delay-1">
+        <div class="category-card__icon" style="background:#FFF3CD;">
+          <i data-lucide="sun" width="28" height="28" style="stroke:#856404;"></i>
+        </div>
+        <h3 class="category-card__name">Solar</h3>
+        <p class="category-card__desc">Installation, maintenance, and surveying of solar systems</p>
+        <div class="category-card__points">
+          <i data-lucide="zap" width="12" height="12"></i>
+          50 pts / gig
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.register') }}" class="category-card reveal reveal-delay-2">
+        <div class="category-card__icon" style="background:#D1ECF1;">
+          <i data-lucide="recycle" width="28" height="28" style="stroke:#0C5460;"></i>
+        </div>
+        <h3 class="category-card__name">E-Waste</h3>
+        <p class="category-card__desc">Collection, sorting, and responsible disposal of electronics</p>
+        <div class="category-card__points">
+          <i data-lucide="zap" width="12" height="12"></i>
+          20 pts / gig
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.register') }}" class="category-card reveal reveal-delay-3">
+        <div class="category-card__icon" style="background:var(--green-pale);">
+          <i data-lucide="sprout" width="28" height="28" style="stroke:var(--green-primary);"></i>
+        </div>
+        <h3 class="category-card__name">Urban Farming</h3>
+        <p class="category-card__desc">Rooftop gardens, urban plots, food security initiatives</p>
+        <div class="category-card__points">
+          <i data-lucide="zap" width="12" height="12"></i>
+          15 pts / gig
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.register') }}" class="category-card reveal reveal-delay-1">
+        <div class="category-card__icon" style="background:#E2E3E5;">
+          <i data-lucide="database" width="28" height="28" style="stroke:#383D41;"></i>
+        </div>
+        <h3 class="category-card__name">Carbon Scout</h3>
+        <p class="category-card__desc">Collect climate and emissions data in communities</p>
+        <div class="category-card__points">
+          <i data-lucide="zap" width="12" height="12"></i>
+          25 pts / gig
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.register') }}" class="category-card reveal reveal-delay-2">
+        <div class="category-card__icon" style="background:#FCE8D5;">
+          <i data-lucide="hard-hat" width="28" height="28" style="stroke:#7B3D0C;"></i>
+        </div>
+        <h3 class="category-card__name">Green Construction</h3>
+        <p class="category-card__desc">Eco-building, insulation, energy-efficient retrofits</p>
+        <div class="category-card__points">
+          <i data-lucide="zap" width="12" height="12"></i>
+          35 pts / gig
+        </div>
+      </a>
+
+      <a href="{{ url_for('auth.register') }}" class="category-card reveal reveal-delay-3">
+        <div class="category-card__icon" style="background:#E8D5FC;">
+          <i data-lucide="megaphone" width="28" height="28" style="stroke:#4B0C7B;"></i>
+        </div>
+        <h3 class="category-card__name">Community Educator</h3>
+        <p class="category-card__desc">Run green workshops and awareness programs locally</p>
+        <div class="category-card__points">
+          <i data-lucide="zap" width="12" height="12"></i>
+          30 pts / gig
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── EMPLOYER CTA ──────────────────────────────────────────────────────────── -->
+<section class="section employer-cta-section reveal" aria-label="Employer call to action">
+  <div class="container">
+    <div class="employer-cta">
+      <div class="employer-cta__content">
+        <p class="section-eyebrow" style="color:var(--gold-accent);">For employers</p>
+        <h2 class="display-3" style="color:var(--white);">Don't post a job.<br/>Describe a human.</h2>
+        <p style="color:rgba(250,253,249,0.7);font-size:1.0625rem;line-height:1.7;margin-top:var(--space-2);">
+          The Human Blueprint™ is our unique hiring form. Tell us the problem
+          you're solving, what the work actually looks like, and what values matter.
+          We match you with workers — not just skills.
+        </p>
+        <a href="{{ url_for('auth.register') }}?type=employer" class="btn btn-gold btn-xl" style="margin-top:var(--space-4);">
+          <i data-lucide="pencil-line" width="20" height="20"></i>
+          Post with Human Blueprint™
+        </a>
+      </div>
+      <div class="employer-cta__visual" aria-hidden="true">
+        <div class="blueprint-preview">
+          <p class="blueprint-preview__label">Human Blueprint™</p>
+          <p class="blueprint-preview__q">What problem are you solving in the next 90 days?</p>
+          <div class="blueprint-preview__answer">
+            Expanding solar installations to 50 homes in Kibera before the rains.
+            We need hands who understand communities, not just panels.
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+            <span class="badge badge-solar"><i data-lucide="sun" width="10" height="10"></i> Solar</span>
+            <span class="badge badge-open">3 matched</span>
+            <span style="font-size:0.75rem;color:rgba(250,253,249,0.5);align-self:center;">SMS sent to top 5 workers</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FINAL CTA ─────────────────────────────────────────────────────────────── -->
+<section class="section final-cta reveal" aria-label="Sign up call to action">
+  <div class="container text-center">
+    <h2 class="display-2" style="max-width:640px;margin:0 auto var(--space-3);">
+      Ready to be part of the green economy?
+    </h2>
+    <p style="font-size:1.125rem;color:var(--text-muted);margin-bottom:var(--space-5);max-width:480px;margin-left:auto;margin-right:auto;">
+      Join thousands of Kenyan workers already earning from green gigs.
+      It takes 10 minutes to register.
+    </p>
+    <div style="display:flex;gap:var(--space-2);justify-content:center;flex-wrap:wrap;">
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-xl">
+        <i data-lucide="user-plus" width="20" height="20"></i>
+        Register as a Worker
+      </a>
+      <a href="{{ url_for('auth.register') }}?type=employer" class="btn btn-secondary btn-xl">
+        <i data-lucide="building-2" width="20" height="20"></i>
+        Register as an Employer
+      </a>
+    </div>
+    <p style="margin-top:var(--space-3);font-size:0.875rem;color:var(--text-muted);">
+      Free to join. No app needed. Works on any phone.
+    </p>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    if (window.lucide) lucide.createIcons();
+  });
+</script>
+{% endblock %}

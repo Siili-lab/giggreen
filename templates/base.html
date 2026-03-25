@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1A6B3A" />
+  <meta name="description" content="{% block meta_description %}GigGreen connects Kenya's gig workers to green economy jobs — solar, e-waste, urban farming, climate data, and more.{% endblock %}" />
+
+  <title>{% block title %}GigGreen — Green Jobs for Kenya{% endblock %}</title>
+
+  <!-- Fonts (preconnect for speed) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Lucide icons (lightweight, tree-shakeable SVG sprite approach via CDN) -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}" />
+  {% block extra_css %}{% endblock %}
+
+  <!-- Favicon placeholder -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🌿</text></svg>" />
+</head>
+
+<body class="{% block body_class %}{% endblock %}">
+
+  <!-- ── Navigation ──────────────────────────────────────────────────────────── -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav__inner">
+
+      <!-- Logo -->
+      <a href="{{ url_for('index') }}" class="nav__logo" aria-label="GigGreen home">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="GigGreen" width="110" height="36" />
+      </a>
+
+      <!-- Desktop links — only shown when logged in as worker or employer -->
+      {% if session_worker_id %}
+      <div class="nav__links" role="menubar">
+        <a href="{{ url_for('worker.dashboard') }}" class="nav__link {% if request.endpoint == 'worker.dashboard' %}active{% endif %}">
+          <i data-lucide="layout-dashboard" width="16" height="16"></i>
+          Dashboard
+        </a>
+        <a href="{{ url_for('gigs.list_gigs') }}" class="nav__link {% if request.endpoint == 'gigs.list_gigs' %}active{% endif %}">
+          <i data-lucide="briefcase" width="16" height="16"></i>
+          Browse Gigs
+        </a>
+        <a href="{{ url_for('worker.profile') }}" class="nav__link {% if request.endpoint == 'worker.profile' %}active{% endif %}">
+          <i data-lucide="user" width="16" height="16"></i>
+          Profile
+        </a>
+        <a href="{{ url_for('worker.earnings') }}" class="nav__link {% if request.endpoint == 'worker.earnings' %}active{% endif %}">
+          <i data-lucide="wallet" width="16" height="16"></i>
+          Earnings
+        </a>
+      </div>
+      {% elif session_employer_id %}
+      <div class="nav__links" role="menubar">
+        <a href="{{ url_for('employer.dashboard') }}" class="nav__link {% if request.endpoint == 'employer.dashboard' %}active{% endif %}">
+          <i data-lucide="layout-dashboard" width="16" height="16"></i>
+          Dashboard
+        </a>
+        <a href="{{ url_for('employer.blueprint') }}" class="nav__link {% if request.endpoint == 'employer.blueprint' %}active{% endif %}">
+          <i data-lucide="pencil-line" width="16" height="16"></i>
+          Post a Gig
+        </a>
+        <a href="{{ url_for('employer.matches') }}" class="nav__link {% if request.endpoint == 'employer.matches' %}active{% endif %}">
+          <i data-lucide="users" width="16" height="16"></i>
+          Matches
+        </a>
+        <a href="{{ url_for('employer.impact_report') }}" class="nav__link {% if request.endpoint == 'employer.impact_report' %}active{% endif %}">
+          <i data-lucide="bar-chart-2" width="16" height="16"></i>
+          Impact Report
+        </a>
+      </div>
+      {% else %}
+      <div class="nav__links" role="menubar">
+        <a href="{{ url_for('index') }}#how-it-works" class="nav__link">How it works</a>
+        <a href="{{ url_for('index') }}#categories" class="nav__link">Green Jobs</a>
+      </div>
+      {% endif %}
+
+      <!-- Right side actions -->
+      <div class="nav__actions">
+
+        <!-- Green Impact Score (workers only) -->
+        {% if session_worker_id %}
+        <a href="{{ url_for('worker.dashboard') }}" class="nav__score" title="Your Green Impact Score" aria-label="Green Impact Score: {{ session_impact_score }}">
+          <i data-lucide="leaf" width="14" height="14" style="stroke: var(--gold-accent);"></i>
+          <span id="nav-score">{{ session_impact_score }}</span> pts
+        </a>
+        {% endif %}
+
+        <!-- Auth buttons -->
+        {% if session_worker_id or session_employer_id %}
+          <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm">
+            <i data-lucide="log-out" width="15" height="15"></i>
+            Sign out
+          </a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-sm">Sign in</a>
+          <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">
+            Get started
+          </a>
+        {% endif %}
+
+        <!-- Mobile hamburger -->
+        <button class="nav__hamburger" aria-label="Toggle menu" aria-expanded="false">
+          <i data-lucide="menu" width="22" height="22"></i>
+        </button>
+      </div>
+
+    </div>
+  </nav>
+
+  <!-- Mobile nav (hidden by default) -->
+  <div class="nav__mobile" role="menu" aria-label="Mobile navigation">
+    {% if session_worker_id %}
+      <a href="{{ url_for('worker.dashboard') }}" class="nav__link">Dashboard</a>
+      <a href="{{ url_for('gigs.list_gigs') }}" class="nav__link">Browse Gigs</a>
+      <a href="{{ url_for('worker.profile') }}" class="nav__link">Profile</a>
+      <a href="{{ url_for('worker.earnings') }}" class="nav__link">Earnings</a>
+      <hr class="divider" />
+      <a href="{{ url_for('auth.logout') }}" class="nav__link">Sign out</a>
+    {% elif session_employer_id %}
+      <a href="{{ url_for('employer.dashboard') }}" class="nav__link">Dashboard</a>
+      <a href="{{ url_for('employer.blueprint') }}" class="nav__link">Post a Gig</a>
+      <a href="{{ url_for('employer.matches') }}" class="nav__link">Matches</a>
+      <a href="{{ url_for('employer.impact_report') }}" class="nav__link">Impact Report</a>
+      <hr class="divider" />
+      <a href="{{ url_for('auth.logout') }}" class="nav__link">Sign out</a>
+    {% else %}
+      <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm btn-full">Get started</a>
+      <a href="{{ url_for('auth.login') }}" class="nav__link">Sign in</a>
+    {% endif %}
+  </div>
+
+  <!-- ── Flash messages ────────────────────────────────────────────────────── -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <script>
+        document.addEventListener("DOMContentLoaded", function() {
+          {% for category, message in messages %}
+            showToast({{ message | tojson }}, {{ category | tojson }});
+          {% endfor %}
+        });
+      </script>
+    {% endif %}
+  {% endwith %}
+
+  <!-- ── Page content ──────────────────────────────────────────────────────── -->
+  <main id="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ── Footer ────────────────────────────────────────────────────────────── -->
+  {% block footer %}
+  <footer class="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+
+        <!-- Brand -->
+        <div class="footer__brand">
+          <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="GigGreen" width="100" height="32"
+               style="filter: brightness(0) invert(1); opacity: 0.85;" />
+          <p class="footer__tagline">
+            The green economy is already here.<br/>
+            We make sure nobody gets left behind.
+          </p>
+        </div>
+
+        <!-- Workers -->
+        <div>
+          <p class="footer__heading">For Workers</p>
+          <a href="{{ url_for('auth.register') }}" class="footer__link">Register</a>
+          <a href="{{ url_for('gigs.list_gigs') }}" class="footer__link">Browse Gigs</a>
+          <a href="{{ url_for('auth.login') }}" class="footer__link">Sign In</a>
+        </div>
+
+        <!-- Employers -->
+        <div>
+          <p class="footer__heading">For Employers</p>
+          <a href="{{ url_for('employer.blueprint') }}" class="footer__link">Post a Gig</a>
+          <a href="{{ url_for('employer.impact_report') }}" class="footer__link">ESG Report</a>
+        </div>
+
+      </div>
+
+      <div class="footer__bottom">
+        <span>&copy; 2026 GigGreen. Built for Africa's green future.</span>
+        <div class="footer__hackathon">
+          <i data-lucide="zap" width="13" height="13"></i>
+          Africa's Talking Women in Tech Hackathon 2026
+        </div>
+      </div>
+    </div>
+  </footer>
+  {% endblock %}
+
+  <!-- ── Offline banner ────────────────────────────────────────────────────── -->
+  <div id="offline-banner" class="offline-banner" role="status" aria-live="polite"></div>
+
+  <!-- ── Toast container ───────────────────────────────────────────────────── -->
+  <div id="toast-container" role="status" aria-live="polite"></div>
+
+  <!-- ── Scripts ───────────────────────────────────────────────────────────── -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+  {% block extra_js %}{% endblock %}
+
+  <!-- Lucide icon boot -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.lucide) lucide.createIcons();
+    });
+  </script>
+
+</body>
+</html>

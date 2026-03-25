@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Worker Matches — GigGreen{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar-circle employer-avatar">E</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('employer.dashboard') }}" class="nav-item">📊 Dashboard</a>
+      <a href="{{ url_for('employer.blueprint') }}" class="nav-item">✏️ Post a Gig</a>
+      <a href="{{ url_for('employer.impact_report') }}" class="nav-item">🌍 Impact Report</a>
+      <a href="{{ url_for('auth.logout') }}" class="nav-item nav-item--logout">↩ Logout</a>
+    </nav>
+  </aside>
+
+  <main class="dashboard-main">
+
+    <div class="dashboard-header">
+      <div>
+        <a href="{{ url_for('employer.dashboard') }}" class="back-link">← Back to Dashboard</a>
+        <h1 class="dashboard-greeting">Matched Workers</h1>
+        {% if gig %}
+        <p class="dashboard-sub">
+          {{ gig.title }} · {{ gig.location }} · KES {{ "{:,}".format(gig.pay_kes) }}
+        </p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if workers %}
+      <div class="matches-list">
+        {% for worker in workers %}
+        <div class="match-card">
+          <div class="match-card__left">
+            <div class="avatar-circle avatar-circle--sm">
+              {{ worker.name[0] if worker.name else '?' }}
+            </div>
+            <div>
+              <h3 class="match-card__name">{{ worker.name }}</h3>
+              <p class="match-card__meta">📍 {{ worker.location }}</p>
+              <p class="match-card__meta">
+                {% set cats = worker.green_categories if worker.green_categories is iterable else [] %}
+                {% for cat in cats %}
+                  <span class="badge badge--category badge--sm">{{ cat }}</span>
+                {% endfor %}
+              </p>
+            </div>
+          </div>
+          <div class="match-card__right">
+            <div class="match-score">
+              <span class="match-score__number">{{ worker.impact_score }}</span>
+              <span class="match-score__label">Impact pts</span>
+            </div>
+            <div class="match-score">
+              <span class="match-score__number">{{ worker.match_score | default(0) }}</span>
+              <span class="match-score__label">Match score</span>
+            </div>
+          </div>
+          <div class="match-card__actions">
+            <button class="btn btn-primary btn-sm confirm-worker-btn"
+                    data-gig-id="{{ gig.id }}"
+                    data-worker-id="{{ worker.id }}">
+              Confirm Worker
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <p class="empty-state__icon">🔍</p>
+        <p class="empty-state__title">No matches yet</p>
+        <p class="empty-state__body">
+          We're still looking. Workers in your area with the right skills will be notified by SMS.
+          Check back soon.
+        </p>
+      </div>
+    {% endif %}
+
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.confirm-worker-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const gigId    = btn.dataset.gigId;
+    const workerId = btn.dataset.workerId;
+    btn.disabled   = true;
+    btn.textContent = 'Confirming...';
+    try {
+      const res = await fetch('/employer/api/confirm-worker', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({gig_id: gigId, worker_id: workerId})
+      });
+      const data = await res.json();
+      if (data.ok) {
+        btn.textContent = '✅ Confirmed';
+        btn.classList.add('btn--success');
+      } else {
+        btn.textContent = 'Try again';
+        btn.disabled = false;
+      }
+    } catch {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+    }
+  });
+});
+</script>
+{% endblock %}

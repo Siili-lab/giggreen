@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% block title %}Browse Gigs — GigGreen{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-profile">
+      <div class="avatar-ring">
+        <span class="avatar-initials">{{ (worker.name or 'W')[0] | upper }}</span>
+      </div>
+      <div class="sidebar-name">{{ worker.name or 'Worker' }}</div>
+      <div class="sidebar-phone">{{ worker.phone }}</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="{{ url_for('worker.dashboard') }}" class="sidebar-link">
+        <span class="sidebar-icon">🏠</span> Dashboard
+      </a>
+      <a href="{{ url_for('worker.gig_feed') }}" class="sidebar-link active">
+        <span class="sidebar-icon">💼</span> Browse Gigs
+      </a>
+      <a href="{{ url_for('worker.profile') }}" class="sidebar-link">
+        <span class="sidebar-icon">👤</span> My Profile
+      </a>
+      <a href="{{ url_for('worker.earnings') }}" class="sidebar-link">
+        <span class="sidebar-icon">💰</span> Earnings
+      </a>
+    </nav>
+    <div class="sidebar-score-block">
+      <div class="sidebar-score-label">Green Impact Score™</div>
+      <div class="sidebar-score-value">{{ worker.impact_score }}</div>
+      <div class="sidebar-level-name">{{ session.user_level_name }}</div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="dashboard-main">
+    <div class="dashboard-header">
+      <div>
+        <h1 class="dashboard-greeting">Green Gigs</h1>
+        <p class="dashboard-subtitle">
+          {{ gigs | length }} open gig{{ 's' if gigs | length != 1 else '' }} available right now.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── Filter Bar ────────────────────────────────────────────────── -->
+    <form class="filter-bar card" method="GET" action="{{ url_for('worker.gig_feed') }}" id="filterForm">
+      <div class="filter-group">
+        <label class="filter-label">Category</label>
+        <select name="category" class="filter-select" onchange="this.form.submit()">
+          <option value="">All categories</option>
+          {% for cat in categories %}
+          <option value="{{ cat }}" {{ 'selected' if selected_category == cat }}>
+            {{ cat }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Location</label>
+        <select name="location" class="filter-select" onchange="this.form.submit()">
+          <option value="">All locations</option>
+          {% for loc in locations %}
+          <option value="{{ loc }}" {{ 'selected' if selected_location == loc }}>
+            {{ loc }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-group filter-pay">
+        <label class="filter-label">Pay (KES)</label>
+        <input type="number" name="min_pay" placeholder="Min"
+               value="{{ selected_min_pay }}" class="filter-input filter-input-sm">
+        <span class="filter-sep">–</span>
+        <input type="number" name="max_pay" placeholder="Max"
+               value="{{ selected_max_pay }}" class="filter-input filter-input-sm">
+        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+      </div>
+
+      {% if selected_category or selected_location or selected_min_pay or selected_max_pay %}
+      <a href="{{ url_for('worker.gig_feed') }}" class="filter-clear">✕ Clear filters</a>
+      {% endif %}
+    </form>
+
+    <!-- ── Gig Cards ─────────────────────────────────────────────────── -->
+    {% if gigs %}
+    <div class="gig-feed-grid" id="gigFeed">
+      {% for gig in gigs %}
+      <div class="gig-card card {% if gig.already_applied %}gig-applied{% endif %}"
+           data-gig-id="{{ gig.id }}"
+           data-category="{{ gig.category }}">
+
+        <div class="gig-card-header">
+          <span class="category-badge">
+            {{ category_icons.get(gig.category, '🌿') }} {{ gig.category }}
+          </span>
+          <span class="gig-pts-badge">+{{ gig.impact_points }} pts</span>
+        </div>
+
+        <h3 class="gig-title">{{ gig.title }}</h3>
+        <p class="gig-employer">{{ gig.company_name or 'Employer' }}</p>
+
+        <div class="gig-meta">
+          <span class="gig-meta-item">📍 {{ gig.location }}</span>
+          <span class="gig-meta-item">💰 KES {{ '{:,}'.format(gig.pay_kes) }}</span>
+          {% if gig.duration %}
+          <span class="gig-meta-item">⏱ {{ gig.duration }}</span>
+          {% endif %}
+        </div>
+
+        {% if gig.description %}
+        <p class="gig-description">{{ gig.description[:120] }}{% if gig.description | length > 120 %}…{% endif %}</p>
+        {% endif %}
+
+        <div class="gig-card-footer">
+          <span class="gig-posted">Posted {{ gig.created_at[:10] }}</span>
+          {% if gig.already_applied %}
+          <span class="btn btn-applied" disabled>Applied ✓</span>
+          {% else %}
+          <button class="btn btn-primary btn-sm apply-btn"
+                  data-gig-id="{{ gig.id }}"
+                  data-gig-title="{{ gig.title }}"
+                  data-gig-pay="{{ gig.pay_kes }}"
+                  data-gig-pts="{{ gig.impact_points }}">
+            Apply Now
+          </button>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state card">
+      <div class="empty-icon">🌱</div>
+      <h3>No gigs match your filters</h3>
+      <p>No gigs in your area yet — we've noted your location and will SMS you the moment one posts. Try widening your search or browse all categories.</p>
+      <a href="{{ url_for('worker.gig_feed') }}" class="btn btn-primary">Show All Gigs</a>
+    </div>
+    {% endif %}
+
+  </main>
+</div>
+
+<!-- Apply confirm modal -->
+<div id="applyModal" class="modal-overlay" hidden>
+  <div class="modal-box">
+    <h3 class="modal-title">Ready to apply?</h3>
+    <div class="modal-gig-summary">
+      <strong id="modalGigTitle"></strong>
+      <span id="modalGigPay"></span>
+      <span id="modalGigPts"></span>
+    </div>
+    <p class="modal-body">Applying lets the employer see your profile. They'll reach you by SMS — no data needed after this.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="modalCancel">Cancel</button>
+      <button class="btn btn-primary" id="modalConfirm">Yes, Apply!</button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/gig-feed.js') }}"></script>
+{% endblock %}
